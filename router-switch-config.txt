@@ -1,0 +1,276 @@
+!! These Commands are just for guidance not all these commands are exactly implemented in this project.
+
+# ==============================
+
+# MAIN CAMPUS CORE SWITCH
+
+# ==============================
+
+```
+enable
+configure terminal
+
+hostname Core-Switch
+
+vlan 10
+ name Administration
+vlan 20
+ name Faculty
+vlan 30
+ name IT_Support
+vlan 40
+ name Library
+vlan 50
+ name Accounts
+vlan 60
+ name Servers
+exit
+
+interface range fastEthernet0/1 - 10
+ switchport mode access
+ switchport access vlan 10
+exit
+
+interface range fastEthernet0/11 - 15
+ switchport mode access
+ switchport access vlan 20
+exit
+
+interface range fastEthernet0/16 - 20
+ switchport mode access
+ switchport access vlan 30
+exit
+
+interface range fastEthernet0/21 - 23
+ switchport mode access
+ switchport access vlan 40
+exit
+
+interface fastEthernet0/24
+ switchport mode access
+ switchport access vlan 50
+exit
+
+interface gigabitEthernet0/1
+ switchport mode trunk
+ switchport trunk encapsulation dot1q
+exit
+
+end
+write memory
+```
+
+---
+
+# ==============================
+
+# MAIN CAMPUS ROUTER (Router-on-a-Stick)
+
+# ==============================
+
+```
+enable
+configure terminal
+
+hostname Main-Router
+
+interface gigabitEthernet0/0
+ no shutdown
+exit
+
+interface gigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+exit
+
+interface gigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+exit
+
+interface gigabitEthernet0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.1 255.255.255.0
+exit
+
+interface gigabitEthernet0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.40.1 255.255.255.0
+exit
+
+interface gigabitEthernet0/0.50
+ encapsulation dot1Q 50
+ ip address 192.168.50.1 255.255.255.0
+exit
+
+interface gigabitEthernet0/0.60
+ encapsulation dot1Q 60
+ ip address 192.168.60.1 255.255.255.0
+exit
+
+interface serial0/0/0
+ ip address 10.0.1.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+
+interface serial0/0/1
+ ip address 10.0.2.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+exit
+
+router ospf 1
+ network 192.168.0.0 0.0.255.255 area 0
+ network 10.0.0.0 0.255.255.255 area 0
+exit
+
+end
+write memory
+```
+
+---
+
+# ==============================
+
+# ACADEMIC BLOCK SWITCH
+
+# ==============================
+
+```
+enable
+configure terminal
+
+hostname Academic-Switch
+
+vlan 70
+ name Academic_Block
+exit
+
+interface range fastEthernet0/1 - 24
+ switchport mode access
+ switchport access vlan 70
+exit
+
+interface gigabitEthernet0/1
+ switchport mode access
+exit
+
+end
+write memory
+```
+
+---
+
+# ==============================
+
+# ACADEMIC BLOCK ROUTER
+
+# ==============================
+
+```
+enable
+configure terminal
+
+hostname Academic-Router
+
+interface gigabitEthernet0/0
+ ip address 192.168.70.1 255.255.255.0
+ no shutdown
+exit
+
+interface serial0/0/0
+ ip address 10.0.1.2 255.255.255.252
+ no shutdown
+exit
+
+router ospf 1
+ network 192.168.70.0 0.0.0.255 area 0
+ network 10.0.1.0 0.0.0.3 area 0
+exit
+
+end
+write memory
+```
+
+---
+
+# ==============================
+
+# STUDENT SERVICES SWITCH
+
+# ==============================
+
+```
+enable
+configure terminal
+
+
+vlan 80
+ name Student_Services
+exit
+
+interface range fastEthernet0/1 - 24
+ switchport mode access
+ switchport access vlan 80
+exit
+
+end
+write memory
+```
+
+---
+
+# ==============================
+
+# STUDENT SERVICES ROUTER
+
+# ==============================
+
+```
+enable
+configure terminal
+
+
+interface gigabitEthernet0/0
+ ip address 192.168.80.1 255.255.255.0
+ no shutdown
+exit
+
+interface serial0/0/0
+ ip address 10.0.2.2 255.255.255.252
+ no shutdown
+exit
+
+router ospf 1
+ network 192.168.80.0 0.0.0.255 area 0
+ network 10.0.2.0 0.0.0.3 area 0
+exit
+
+end
+write memory
+```
+
+---
+
+# ==============================
+
+# ACL CONFIGURATION (SECURITY)
+
+# ==============================
+
+```
+enable
+configure terminal
+
+access-list 100 deny ip any 192.168.50.0 0.0.0.255
+access-list 100 permit ip any any
+
+interface gigabitEthernet0/0.50
+ ip access-group 100 in
+exit
+
+end
+write memory
+```
+
